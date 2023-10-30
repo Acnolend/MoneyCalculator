@@ -2,18 +2,20 @@ package software.ulpgc.moneycalculator.gui;
 
 
 
-import software.ulpgc.moneycalculator.Recolector;
-import software.ulpgc.moneycalculator.Transformador;
+import software.ulpgc.moneycalculator.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
-import static software.ulpgc.moneycalculator.CollectBadge.badges;
-
 public class ControlPane extends JFrame {
+    CurrencyLoader currencyLoader = new CsvFileCurrencyLoader(new File("currencies.csv"));
+    List<Currency> currencies = currencyLoader.load();
+    String[] badges = NameOfCurrencies.nameOfCurriencies(currencies);
     private JTextField printOut;
     private JComboBox listBoxReference;
     private JComboBox listBoxTo;
@@ -32,14 +34,14 @@ public class ControlPane extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setSize(300,200);
-        setMinimumSize(new Dimension(300,200));
+        setMinimumSize(new Dimension(600,200));
         setVisible(true);
     }
 
     private JComponent createSelectBadge() {
         JPanel listPanel = new JPanel();
-        listBoxReference = new JComboBox<String>(badges());
-        listBoxTo = new JComboBox<String>(badges());
+        listBoxReference = new JComboBox<String>(badges);
+        listBoxTo = new JComboBox<String>(badges);
         listPanel.add(listBoxReference);
         listPanel.add(listBoxTo);
         return listPanel;
@@ -64,19 +66,20 @@ public class ControlPane extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        String result = null;
+
                         if(amountBadge.getText().equals("")){
                             printOut.setText("¡NO HAS SELECCIONADO NINGUNA CANTIDAD!");
                         } else {
                             try {
-                                result = Recolector.getURL("https://v6.exchangerate-api.com/v6/0d36e3f2d88ea6b941227aac/latest/"+listBoxReference.getSelectedItem());
+                                Currency from = SearchObjectbyName.SearchObjectbyName(currencies, (String) listBoxReference.getSelectedItem());
+                                Currency to = SearchObjectbyName.SearchObjectbyName(currencies, (String) listBoxTo.getSelectedItem());
+                                ExchangeRate result = new ExchangeRate(from,to);
+                                float amount = (float) (Math.round(Float.parseFloat(amountBadge.getText())*result.getURL() * 100d) / 100d);
+                                printOut.setText(amountBadge.getText()+" "+(String) listBoxReference.getSelectedItem()+" ---> "
+                                        +amount+" "+(String) listBoxTo.getSelectedItem());
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            Map map = Transformador.MapOfDivisa(result);
-                            double newAmount = (double) map.get(listBoxTo.getSelectedItem()) * Double.parseDouble(amountBadge.getText());
-                            printOut.setText(amountBadge.getText()+" "+listBoxReference.getSelectedItem()+" ---> "
-                                    +newAmount+" "+listBoxTo.getSelectedItem());
                         }
                     }
                 }
