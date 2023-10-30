@@ -33,6 +33,7 @@ public class ControlPane extends JFrame {
         getContentPane().add(thirdPanel);
         pack();
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(300,200);
         setMinimumSize(new Dimension(600,200));
         setVisible(true);
