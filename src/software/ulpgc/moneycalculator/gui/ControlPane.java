@@ -6,27 +6,23 @@ import software.ulpgc.moneycalculator.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+
 
 public class ControlPane extends JFrame {
     CurrencyLoader currencyLoader = new CsvFileCurrencyLoader(new File("currencies.csv"));
-    List<Currency> currencies = currencyLoader.load();
-    String[] badges = NameOfCurrencies.nameOfCurriencies(currencies);
+    Currency[] currencies = currencyLoader.load().toArray(Currency[]::new);
     private JTextField printOut;
-    private JComboBox listBoxReference;
-    private JComboBox listBoxTo;
+    private final JComboBox listBoxReference = new JComboBox<>(currencies);
+    private final JComboBox listBoxTo = new JComboBox<>(currencies);
     private JTextField amountBadge;
 
     public ControlPane() {
         setTitle("Money Calculator");
         JComponent lists = createSelectBadge();
         JComponent out = createTextField();
-        JComponent buttoms = createButtom();
         JComponent amount = createAmountBadge();
+        JComponent buttoms = createButtom();
         JSplitPane firstPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, lists,amount);
         JSplitPane secondPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, firstPanel,out);
         JSplitPane thirdPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, secondPanel,buttoms);
@@ -40,12 +36,7 @@ public class ControlPane extends JFrame {
     }
 
     private JComponent createSelectBadge() {
-        JPanel listPanel = new JPanel();
-        listBoxReference = new JComboBox<String>(badges);
-        listBoxTo = new JComboBox<String>(badges);
-        listPanel.add(listBoxReference);
-        listPanel.add(listBoxTo);
-        return listPanel;
+        return new SelectBadge(listBoxReference,listBoxTo);
     }
 
     private JComponent createAmountBadge() {
@@ -61,32 +52,8 @@ public class ControlPane extends JFrame {
 
 
     private JComponent createButtom() {
-        JPanel buttoms = new JPanel();
-        JButton convert = new JButton("Convertir!");
-        convert.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        if(amountBadge.getText().equals("")){
-                            printOut.setText("¡NO HAS SELECCIONADO NINGUNA CANTIDAD!");
-                        } else {
-                            try {
-                                Currency from = SearchObjectbyName.SearchObjectbyName(currencies, (String) listBoxReference.getSelectedItem());
-                                Currency to = SearchObjectbyName.SearchObjectbyName(currencies, (String) listBoxTo.getSelectedItem());
-                                ExchangeRate result = new ExchangeRate(from,to);
-                                float amount = (float) (Math.round(Float.parseFloat(amountBadge.getText())*result.getURL() * 100d) / 100d);
-                                printOut.setText(amountBadge.getText()+" "+(String) listBoxReference.getSelectedItem()+" ---> "
-                                        +amount+" "+(String) listBoxTo.getSelectedItem());
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                }
-        );
-        buttoms.add(convert);
-        return buttoms;
+        ConfirmButtonActionListener confirmButtonActionListener = new ConfirmButtonActionListener(
+                amountBadge,printOut,listBoxReference,listBoxTo);
+        return new ConfirmButton(confirmButtonActionListener);
     }
-
 }
