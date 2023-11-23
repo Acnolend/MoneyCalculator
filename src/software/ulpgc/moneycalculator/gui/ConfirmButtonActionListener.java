@@ -1,7 +1,6 @@
 package software.ulpgc.moneycalculator.gui;
 
-import software.ulpgc.moneycalculator.Currency;
-import software.ulpgc.moneycalculator.ExchangeRate;
+import software.ulpgc.moneycalculator.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -39,9 +38,12 @@ public class ConfirmButtonActionListener implements ActionListener {
 
     private void actionPerformed(ExchangeRate exchangeRate) throws Exception {
         String cantidad = amountBadge.getText();
+        Command command = new ApiGet(exchangeRate);
+        Money money = ApiResult.getMoney(command.execute(),exchangeRate);
+        float amount = (float) (Math.round(Float.parseFloat(cantidad)*money.getAmount() * 100d) / 100d);
         String nameFrom = exchangeRate.getFrom().getName();
         String nameTo = exchangeRate.getTo().getName();
-        float amount = (float) (Math.round(Float.parseFloat(cantidad)*exchangeRate.getURL() * 100d) / 100d);
+
         printOut.setText(cantidad+" "+nameFrom+" ---> "+amount+" "+nameTo);
     }
     
