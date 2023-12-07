@@ -1,6 +1,8 @@
 package software.ulpgc.moneycalculator.gui;
 
 import software.ulpgc.moneycalculator.*;
+import software.ulpgc.moneycalculator.api.ApiGet;
+import software.ulpgc.moneycalculator.api.ApiResult;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

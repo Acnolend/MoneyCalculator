@@ -1,4 +1,7 @@
-package software.ulpgc.moneycalculator;
+package software.ulpgc.moneycalculator.api;
+
+import software.ulpgc.moneycalculator.Command;
+import software.ulpgc.moneycalculator.ExchangeRate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class ApiGet implements Command{
+public class ApiGet implements Command {
 
     private final ExchangeRate exchangeRate;
 

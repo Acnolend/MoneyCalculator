@@ -1,4 +1,7 @@
-package software.ulpgc.moneycalculator;
+package software.ulpgc.moneycalculator.api;
+
+import software.ulpgc.moneycalculator.ExchangeRate;
+import software.ulpgc.moneycalculator.Money;
 
 public class ApiResult {
     public static Money getMoney(String json, ExchangeRate exchangeRate) {
